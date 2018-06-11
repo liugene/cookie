@@ -1,0 +1,20 @@
+{
+  "name": "linkphp/cookie",
+  "type": "library",
+  "description": "php cookie",
+  "keywords": ["cookie","php cookie "],
+  "authors": [
+    {
+      "name": "liugene",
+      "email": "liujun2199@vip.qq.com"
+    }
+  ],
+  "require": {
+    "php": "^5.5 || ^7.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "linkphp\\cookie\\": "src"
+    }
+  }
+}
