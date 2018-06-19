@@ -2,36 +2,40 @@
 
 namespace linkphp\cookie;
 
+use Config;
 
-class Cookie {
+class Cookie
+{
+
     /**
      * COOKIE配置
      */
     protected $config = array();
-    /**
-     * @param string $config['path'] 路径
-     * @param string $config['domain'] 域名
-     * @param boolean $config['secure'] 是否加密
-     * @param boolean $config['httponly'] 是否只HTTP协议
-     */
-    public function __construct($config = array()) {
-        $this->config['path']       = isset($config['path']) ? $config['path'] : NULL;
-        $this->config['domain']     = isset($config['domain']) ? $config['domain'] : NULL;
-        $this->config['secure']     = isset($config['secure']) ? $config['secure'] : FALSE;
-        $this->config['httponly']   = isset($config['httponly']) ? $config['httponly'] : FALSE;
+
+    public function __construct(array $config = [])
+    {
+        if(empty($this->config)){
+            $this->config = Config::get('cookie.');
+        }
+
+        $this->config = array_merge($this->config, array_change_key_case($config));
+
     }
+
     /**
      * 获取COOKIE
      *
      * @param string $name 待获取的COOKIE名字
      * @return string/NULL/array $name为NULL时返回整个$_COOKIE，存在时返回COOKIE，否则返回NULL
      */
-    public function get($name = NULL) {
+    public function get($name = NULL)
+    {
         if ($name === NULL) {
             return $_COOKIE;
         }
         return isset($_COOKIE[$name]) ? $_COOKIE[$name] : NULL;
     }
+
     /**
      * 设置COOKIE
      *
@@ -41,9 +45,12 @@ class Cookie {
      * @param boolean
      * @return bool
      */
-    public function set($name, $value, $expire = NULL) {
+    public function set($name, $value, $expire = NULL)
+    {
         if ($expire === NULL) {
-            $expire = $_SERVER['REQUEST_TIME'] + 2592000;   //a month
+            $expire = !empty($this->config['expire']) ?
+                $_SERVER['REQUEST_TIME'] + intval($this->config['expire']) :
+                0;
         }
         return setcookie(
             $name,
@@ -55,6 +62,7 @@ class Cookie {
             $this->config['httponly']
         );
     }
+
     /**
      * 删除COOKIE
      *
@@ -63,13 +71,16 @@ class Cookie {
      * @see Cookie::set()
      * @return bool
      */
-    public function delete($name) {
+    public function delete($name)
+    {
         return $this->set($name, '', 0);
     }
+
     /**
      * 获取COOKIE的配置
      */
-    public function getConfig() {
+    public function getConfig()
+    {
         return $this->config;
     }
 }
